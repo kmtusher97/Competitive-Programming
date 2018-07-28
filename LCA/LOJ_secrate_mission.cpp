@@ -25,8 +25,6 @@ int queryLCA( int u, int v ) {
     if( sp[u][i][0] + 1 && h[sp[u][i][0]] >= h[v] )
       res = max( res, sp[u][i][1] ), u = sp[u][i][0];
 
-  if( u == v ) return res;
-
   for(int i = MX_LOG - 1; i >= 0; i--)
     if( sp[u][i][0] != sp[v][i][0] ) {
       res = max( res, max( sp[u][i][1], sp[v][i][1] ) );
