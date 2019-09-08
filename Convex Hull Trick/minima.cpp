@@ -21,7 +21,8 @@ struct Line {
 		
 		const Line* l1 = line();
 		if( !l1 ) return false;
-		return (c - l1->c) < (l1->m - m) * other.m;
+		ll x = other.m;
+		return (c - l1->c) < (l1->m - m) * x;
 	}
 };
  
@@ -44,8 +45,8 @@ struct HullDynamic : public multiset<Line> {
 	}
  
 	void add_line( ll m, ll c ) {
-		auto it = insert( {m, c} );     
- 
+		auto it = insert( {m, c} ); 
+		
 		it->line = [=] { return next( it ) == end() ? 0 : &*next( it ); };
 		if( bad( it ) ) {
 			erase( it );
@@ -61,31 +62,34 @@ struct HullDynamic : public multiset<Line> {
 	}
 };
  
- 
 int main() {
 	ios_base :: sync_with_stdio(0);
 	cin.tie(0), cout.tie(0);
 	int n;
 	cin >> n;
-	vector< pair< pair<ll, ll> , ll > > A(n);
-	for(int i = 0; i < n; i++) {
-		cin >> A[i].first.first >> A[i].first.second >> A[i].second;
+	vector<ll> A(n), B(n);
+	for(auto& a : A) {
+		cin >> a;
 	}
-	sort(A.begin(), A.end());
+	for(auto& b : B) {
+		cin >> b;
+	}
  
+	ll cost = 0, res = 1e18;
 	HullDynamic cht;
-	ll cost = 0LL, res = -1e16;
-	cht.add_line( 0, 0 ); // for maxima
 	
 	for(int i = 0; i < n; i++) {
-		cost = A[i].first.first *  A[i].first.second - A[i].second + cht.query( A[i].first.second );
-		cht.add_line( -A[i].first.first, cost );
-		res = max(res, cost);
+		if( i == 0 ) {
+			cht.add_line( -B[i], 0 );
+			continue;
+		}
+		cost = cht.query( A[i] );
+		cht.add_line( -B[i], cost );
+		res = min(res, cost);
 	}
- 
-	cout << res << "\n";
+	cout << -res << "\n";
 }
 /**
- * dp(i) = x[i] * y[i] - a[i] + max { -x[j] * y[i] + dp(j) }
- *                             0<j<i	
+ * dp(i) = min {a[i]. b[j] + dp(j)}
+ *        0<j<i
  */
